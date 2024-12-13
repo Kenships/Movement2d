@@ -11,7 +11,7 @@ public class Player : MonoBehaviour
 
     public void Start()
     {
-        
+        RecenterMass();
     }
 
     public void Update()
@@ -20,15 +20,27 @@ public class Player : MonoBehaviour
         NormalizeRotation();
     }
 
+    private void RecenterMass()
+    {
+        rb.centerOfMass = new Vector2(0,0);
+    }
+    
     private void NormalizeRotation()
     {
-        float rotationSpeed;
-        if(transform.rotation.z != 0) 
+        float zRotation = transform.rotation.eulerAngles.z;
+        Debug.Log(zRotation);
+        if (zRotation is >= 30 and <= 180)
         {
-            rotationSpeed = Math.Abs(transform.rotation.z * 15f);
-            Debug.Log(transform.rotation.z);
-            transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.identity, Time.deltaTime*rotationSpeed);
+            //transform.rotation = Quaternion.Euler(0f, 0f, Math.Clamp(zRotation, 0, 30f));
+            transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(0f, 0f, 30f), 100f*Time.deltaTime);
         }
+        else if (zRotation is <= 330 and >= 180)
+        {
+            // transform.rotation = Quaternion.Euler(0f, 0f, Math.Clamp(zRotation, 330, 360));
+            transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(0f, 0f, 330f), 100f*Time.deltaTime);
+        }
+        
+        
     }
 
     private void HandleMovement()
@@ -47,5 +59,10 @@ public class Player : MonoBehaviour
     private bool IsGrounded()
     {
         return Physics2D.Raycast(transform.position, Vector2.down, castDistance);
+    }
+
+    public Vector2 GetCenterOfMass()
+    {
+        return rb.worldCenterOfMass;
     }
 }                        
