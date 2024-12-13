@@ -17,17 +17,28 @@ public class Player : MonoBehaviour
     public void Update()
     {
         HandleMovement();
+        NormalizeRotation();
+    }
+
+    private void NormalizeRotation()
+    {
+        float rotationSpeed;
+        if(transform.rotation.z != 0) 
+        {
+            rotationSpeed = Math.Abs(transform.rotation.z * 15f);
+            Debug.Log(transform.rotation.z);
+            transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.identity, Time.deltaTime*rotationSpeed);
+        }
     }
 
     private void HandleMovement()
     {
         //Left and right movement
         float moveDir = GameInput.Instance.GetHorizontalMovementDirection();
-        transform.position += new Vector3(moveDir * horizontalSpeed,0,0);
+        transform.position += new Vector3(moveDir * horizontalSpeed * Time.deltaTime,0,0);
         
         //Jump
         float jumpMagnitude = GameInput.Instance.GetJumpInputMagnitude();
-        Debug.Log(IsGrounded());
         if(IsGrounded())
             rb.AddForce(new Vector2(0f, jumpMagnitude*jumpForce));
     }
